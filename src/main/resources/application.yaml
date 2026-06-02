@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: insurance
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/insurance_dev
+    username: root
+    password: 8207
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  logging:
+    level:
+      root: INFO
+      com.allianz.insurance: DEBUG
