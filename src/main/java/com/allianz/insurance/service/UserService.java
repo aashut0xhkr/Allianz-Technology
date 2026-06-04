@@ -1,11 +1,13 @@
 package com.allianz.insurance.service;
 
+import com.allianz.insurance.dto.auth.AuthResponse;
 import com.allianz.insurance.dto.auth.LoginRequest;
 import com.allianz.insurance.dto.auth.RegisterRequest;
 import com.allianz.insurance.entity.User;
 import com.allianz.insurance.exception.InvalidCredentialsException;
 import com.allianz.insurance.exception.UserAlreadyExistsException;
 import com.allianz.insurance.repository.UserRepository;
+import com.allianz.insurance.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public void register(RegisterRequest request) {
 
@@ -46,7 +49,7 @@ public class UserService {
                 request.getEmail());
     }
 
-    public void login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request) {
 
         log.info("Login request received for email: {}",
                 request.getEmail());
@@ -75,5 +78,15 @@ public class UserService {
 
         log.info("User logged in successfully with email: {}",
                 request.getEmail());
+
+        String token = jwtUtil.generateToken(
+                user.getEmail());
+
+        log.info("JWT token generated successfully for {}",
+                user.getEmail());
+
+        return new AuthResponse(
+                token,
+                "Login Successful");
     }
 }

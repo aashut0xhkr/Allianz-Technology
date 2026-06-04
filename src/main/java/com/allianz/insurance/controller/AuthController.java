@@ -1,5 +1,6 @@
 package com.allianz.insurance.controller;
 
+import com.allianz.insurance.dto.auth.AuthResponse;
 import com.allianz.insurance.dto.auth.LoginRequest;
 import com.allianz.insurance.dto.auth.RegisterRequest;
 import com.allianz.insurance.service.UserService;
@@ -38,11 +39,11 @@ public class AuthController {
                 .body("User Registered Successfully");
     }
     @PostMapping("/login")
-    public ResponseEntity<String> login(
-            @Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(
+            @Valid
+            @RequestBody LoginRequest request) {
 
-        userService.login(request);
-
-        return ResponseEntity.ok("Login Successful");
+        return ResponseEntity.ok(
+                userService.login(request));
     }
 }

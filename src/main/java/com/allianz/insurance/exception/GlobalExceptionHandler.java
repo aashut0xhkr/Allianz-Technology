@@ -3,8 +3,10 @@ package com.allianz.insurance.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,16 +26,17 @@ public class GlobalExceptionHandler {
                 .body(ex.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(
-            Exception ex) {
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<String> handleInvalidCredentials(
+            InvalidCredentialsException ex) {
 
-        log.error("Unexpected exception occurred", ex);
+        log.warn("Authentication failed: {}", ex.getMessage());
 
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Something went wrong");
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ex.getMessage());
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(
             MethodArgumentNotValidException ex) {
@@ -47,17 +50,30 @@ public class GlobalExceptionHandler {
                                 error.getField(),
                                 error.getDefaultMessage()));
 
-        return ResponseEntity.badRequest()
+        return ResponseEntity
+                .badRequest()
                 .body(errors);
     }
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<String> handleInvalidCredentials(
-            InvalidCredentialsException ex) {
 
-        log.warn("Authentication failed: {}", ex.getMessage());
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied(
+            AccessDeniedException ex) {
+
+        log.warn("Access denied: {}", ex.getMessage());
 
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ex.getMessage());
+                .status(HttpStatus.FORBIDDEN)
+                .body("Access Denied");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(
+            Exception ex) {
+
+        log.error("Unexpected exception occurred", ex);
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Something went wrong");
     }
 }
