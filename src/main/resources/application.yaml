@@ -14,7 +14,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  logging:
-    level:
-      root: INFO
-      com.allianz.insurance: DEBUG
+
+logging:
+  level:
+    root: INFO
+    com.allianz.insurance: DEBUG
+
+jwt:
+  secret: mySuperSecretKeyForInsuranceProjectJwtAuthentication2026SuperSecretKey
+  expiration: 86400000
