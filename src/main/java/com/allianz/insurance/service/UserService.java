@@ -24,16 +24,12 @@ public class UserService {
 
     public void register(RegisterRequest request) {
 
-        log.info("Registration request received for email: {}",
-                request.getEmail());
+        log.info("Registration request received for email: {}", request.getEmail());
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
 
-            log.warn("Registration failed. User already exists with email: {}",
-                    request.getEmail());
-
-            throw new UserAlreadyExistsException(
-                    "User already exists with email: " + request.getEmail());
+            log.warn("Registration failed. User already exists with email: {}", request.getEmail());
+            throw new UserAlreadyExistsException("User already exists with email: " + request.getEmail());
         }
 
         User user = User.builder()
@@ -45,48 +41,24 @@ public class UserService {
 
         userRepository.save(user);
 
-        log.info("User registered successfully with email: {}",
-                request.getEmail());
+        log.info("User registered successfully with email: {}", request.getEmail());
     }
 
     public AuthResponse login(LoginRequest request) {
 
-        log.info("Login request received for email: {}",
-                request.getEmail());
+        log.info("Login request received for email: {}", request.getEmail());
 
-        User user = userRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow(() -> {
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> {
+                    log.warn("Login failed. User not found with email: {}", request.getEmail());
+                    return new InvalidCredentialsException("Invalid email or password");});
 
-                    log.warn("Login failed. User not found with email: {}",
-                            request.getEmail());
-
-                    return new InvalidCredentialsException(
-                            "Invalid email or password");
-                });
-
-        if (!passwordEncoder.matches(
-                request.getPassword(),
-                user.getPassword())) {
-
-            log.warn("Login failed. Invalid password for email: {}",
-                    request.getEmail());
-
-            throw new InvalidCredentialsException(
-                    "Invalid email or password");
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            log.warn("Login failed. Invalid password for email: {}", request.getEmail());
+            throw new InvalidCredentialsException("Invalid email or password");
         }
-
-        log.info("User logged in successfully with email: {}",
-                request.getEmail());
-
-        String token = jwtUtil.generateToken(
-                user.getEmail());
-
-        log.info("JWT token generated successfully for {}",
-                user.getEmail());
-
-        return new AuthResponse(
-                token,
-                "Login Successful");
+        log.info("User logged in successfully with email: {}", request.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail());
+        log.info("JWT token generated successfully for {}",user.getEmail());
+        return new AuthResponse(token, "Login Successful");
     }
 }
