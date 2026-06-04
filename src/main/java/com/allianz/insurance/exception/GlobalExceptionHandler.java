@@ -14,6 +14,37 @@ import java.util.Map;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(PolicyNotFoundException.class)
+    public ResponseEntity<String> handlePolicyNotFound(
+            PolicyNotFoundException ex) {
+
+        log.warn("Policy not found: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
+    }
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<String> handleCustomerNotFound(
+            CustomerNotFoundException ex) {
+
+        log.warn("Customer not found: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
+    }
+    @ExceptionHandler(CustomerAlreadyExistsException.class)
+    public ResponseEntity<String> handleCustomerAlreadyExists(
+            CustomerAlreadyExistsException ex) {
+
+        log.warn("Customer already exists: {}",
+                ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<String> handleUserAlreadyExists(

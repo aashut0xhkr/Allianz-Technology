@@ -23,27 +23,15 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(
-            @Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
 
-        log.info("Received register API request for email: {}",
-                request.getEmail());
-
+        log.info("Received register API request for email: {}", request.getEmail());
         userService.register(request);
-
-        log.info("Register API completed successfully for email: {}",
-                request.getEmail());
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("User Registered Successfully");
+        log.info("Register API completed successfully for email: {}", request.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body("User Registered Successfully");
     }
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
-            @Valid
-            @RequestBody LoginRequest request) {
-
-        return ResponseEntity.ok(
-                userService.login(request));
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(userService.login(request));
     }
 }
